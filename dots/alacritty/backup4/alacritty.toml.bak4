@@ -1,0 +1,5 @@
+import = ["~/.cache/wal/colors-alacritty.toml"]
+
+[colors.primary]
+# Background color — change this to any hex color you like
+# background = "#000000"

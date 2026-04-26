@@ -1,0 +1,9 @@
+configuration {
+    modi:                "drun,window,run";
+    show-icons:          true;
+    drun-display-format: "{name}";
+    font:                "DejaVu Sans Mono 11";
+}
+
+// Points at the wal-generated theme — updates automatically on every wallpaper change
+@theme "~/.cache/wal/colors-rofi.rasi"

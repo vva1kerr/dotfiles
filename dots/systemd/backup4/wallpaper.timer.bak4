@@ -1,0 +1,10 @@
+[Unit]
+Description=Rotate wallpaper every 350 seconds
+
+[Timer]
+OnBootSec=5
+OnUnitActiveSec=350
+Unit=wallpaper.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,75 @@
+* {{
+    background:     {background};
+    background-alt: {color1};
+    foreground:     {foreground};
+    border-col:     {color2};
+    selected-bg:    {color2};
+    selected-fg:    {background};
+}}
+
+window {{
+    background-color: @background;
+    border:           2px solid;
+    border-color:     @border-col;
+    border-radius:    8px;
+    padding:          10px;
+    width:            35%;
+}}
+
+mainbox {{
+    background-color: @background;
+    spacing:          8px;
+    padding:          0;
+}}
+
+inputbar {{
+    children:         [prompt, entry];
+    background-color: @background-alt;
+    border-radius:    6px;
+    padding:          4px 8px;
+}}
+
+prompt {{
+    background-color: @background-alt;
+    padding:          6px 4px;
+    text-color:       @border-col;
+}}
+
+entry {{
+    background-color: @background-alt;
+    padding:          6px 0;
+    text-color:       @foreground;
+}}
+
+listview {{
+    background-color: @background;
+    padding:          4px 0 0 0;
+    columns:          1;
+    lines:            8;
+    spacing:          2px;
+}}
+
+element {{
+    background-color: @background;
+    text-color:       @foreground;
+    padding:          8px 10px;
+    border-radius:    6px;
+    spacing:          8px;
+    children:         [element-icon, element-text];
+}}
+
+element selected {{
+    background-color: @selected-bg;
+    text-color:       @selected-fg;
+}}
+
+element-text {{
+    background-color: inherit;
+    text-color:       inherit;
+    vertical-align:   0.5;
+}}
+
+element-icon {{
+    size:             1.2em;
+    background-color: inherit;
+}}

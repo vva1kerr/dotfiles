@@ -1,0 +1,359 @@
+
+
+; Offset the bar from the top/bottom of the screen (in pixels)
+[global/wm]
+margin-top = 0
+margin-bottom = 0
+
+; Reload bar when display setup changes (e.g. plugging in a monitor)
+; compositing-* controls how bar layers are drawn on top of each other
+[settings]
+screenchange-reload = true
+compositing-background = over
+compositing-foreground = over
+compositing-overline = over
+compositing-underline = over
+compositing-border = over
+
+;=================================
+;   BARS
+;=================================
+
+[bar/mainbar-poly]
+; Allow other tools to send commands to polybar over IPC (e.g. toggle modules)
+enable-ipc = true
+top = true
+
+; Use MONITORS env var if set, otherwise fall back to eDP-1.
+; Run "xrandr --query | grep connected" to find your monitor name.
+; Auto-detected by launch_bar.sh via xrandr; falls back to HDMI-0 if unset
+monitor = ${env:MONITOR:HDMI-0}
+
+width = 100%
+height = 30
+
+; dpi = 124  ; was hardcoded for HiDPI laptop — now auto-detected from X
+
+; Thickness of the overline/underline decorators (in pixels)
+line-size = 1
+
+; Space between the bar edge and the first/last module
+padding-left = 0
+padding-right = 0
+
+; Space added to the left and right of each module
+module-margin-left = 0
+module-margin-right = 0
+
+; Character printed between modules
+separator =  |
+
+; font-0 is the primary font (Nerd Font for icons), font-1 is a fallback
+font-0 = "JetBrainsMono Nerd Font:size=9;2"
+font-1 = Hack:style=Regular:size=9
+
+; Scroll on the bar to cycle i3 workspaces
+scroll-up = i3.next
+scroll-down = i3.prev
+
+overline-size = 10
+underline-size = 2
+
+; Modules are listed left-to-right within each position.
+; To add or remove a module, edit this line and add/remove its [module/name] section below.
+modules-left = emblem i3 filesystem pkgupdates tray
+modules-right = cpu memory cpu-temp gpu-temp gpu-fan wired-network wireless-network volume backlight battery date
+
+
+;=========================================
+;	MODULES
+;=========================================
+
+; Displays i3 workspaces on the bar. Clicking switches to that workspace.
+[module/i3]
+type = internal/i3
+; Only show workspaces for the monitor this bar is on
+pin-workspaces = true
+; Hide the workspace number prefix (e.g. show "term" not "1:term")
+strip-wsnumbers = true
+index-sort = true
+; Disable mouse scroll changing workspaces
+enable-scroll = false
+; Match workspace names loosely when using ws-icon
+fuzzy-match = true
+
+; Map workspace numbers to Nerd Font icons.
+; Format: ws-icon-N = <workspace-name>;<icon>
+; Change the icons or add more to match your workflow.
+ws-icon-0 = 1;
+ws-icon-1 = 2;
+ws-icon-2 = 3;
+ws-icon-3 = 4;
+ws-icon-4 = 5;5
+ws-icon-default =
+
+label-dimmed-underline = ${root.background}
+format = <label-state> <label-mode>
+; %mode% shows the current i3 binding mode (e.g. "resize")
+label-mode = %mode%
+label-mode-padding = 2
+; Active workspace shows the icon, inactive shows the number
+label-focused = %icon%
+label-focused-padding = 1
+label-unfocused = %index%
+label-unfocused-padding = 1
+label-visible = %icon%
+label-visible-padding = 1
+label-urgent = %index%
+label-urgent-padding = 1
+label-separator = |
+label-separator-padding = 1
+
+
+; System tray — shows icons for background apps (network, Bluetooth, etc.)
+[module/tray]
+type = internal/tray
+format-margin = 8px
+tray-spacing = 3px
+tray-padding = 3px
+; Icon height as a percentage of bar height
+tray-size = 50%
+tray-scale = 1.0
+tray-transparent = true
+; Maximum icon size in pixels
+tray-maxsize = 64
+tray-offset-y = 0
+
+
+; A small decorative symbol on the far left of the bar
+[module/emblem]
+type = custom/text
+format-padding = 1
+label = ⋏
+label-font = 2:size=12
+
+[module/gpu-fan]
+type = custom/script
+exec = ~/.config/polybar/scripts/gpu_fan.sh
+interval = 5
+label = GPU Fan: %output%
+
+; Shows overall CPU usage as a percentage, updated every 100ms
+[module/cpu]
+type = internal/cpu
+interval = 0.1
+format = <label>
+label = CPU %percentage%%
+
+
+; Shows RAM usage. Switches to used/free GB display when above warn-percentage
+[module/memory]
+type = internal/memory
+interval = 0.1
+; Show the warn label when usage exceeds this percentage
+warn-percentage = 95
+format = <label>
+format-warn = <label-warn>
+label = RAM %percentage_used%%
+label-warn = RAM %gb_used%/%gb_free%
+
+
+; Shows disk usage for the root filesystem
+; Add more mount points with mount-1 = /home, etc.
+[module/filesystem]
+type = internal/fs
+; Update every 30 seconds (disk usage changes slowly)
+interval = 30
+label-padding = 1
+mount-0 = /
+
+label-mounted = disk %percentage_used%%
+label-unmounted = disk not mounted
+
+
+; Runs check_updates.sh to show pending package updates.
+; Rechecks every 4 hours (14400 seconds) to avoid hammering the package index.
+; tail = true means the script runs persistently and polybar reads its stdout.
+[module/pkgupdates]
+type = custom/script
+exec = /bin/sh -c ~/.config/polybar/scripts/check_updates.sh
+tail = true
+interval = 14400
+format = <label>
+format-padding = 1
+; Truncate output at 15 characters to keep the bar tidy
+label = %output:0:15:...%
+label-font = 2:size=8
+
+
+; Runs volume.sh to display current volume/mute state.
+; interval = 0 means the script is persistent (uses tail mode implicitly via the script).
+; Left-click toggles mute, scroll adjusts volume by 5%.
+[module/volume]
+type = custom/script
+exec = ~/.config/polybar/scripts/volume.sh
+interval = 0
+click-left = pamixer --toggle-mute
+scroll-up = pamixer --increase 5
+scroll-down = pamixer --decrease 5
+format-padding = 1
+format = <label>
+label = %output%
+label-padding = 0
+
+
+; Screen brightness control using kernel backlight interface.
+; To find your card name run: ls /sys/class/backlight/
+; ramp icons change based on brightness level (requires Nerd Font)
+[module/backlight]
+type = internal/backlight
+card = intel_backlight
+; Read actual brightness rather than the requested value
+use-actual-brightness = true
+; poll-interval = 0 disables polling — updates are event-driven instead
+poll-interval = 0
+format = <ramp> <label>
+format-padding = 1
+label = %percentage%%
+
+ramp-0 =
+ramp-1 =
+ramp-2 =
+ramp-3 =
+ramp-4 =
+ramp-5 =
+
+
+; CPU temperature — reads from hwmon (k10temp for AMD, coretemp for Intel).
+; The built-in internal/temperature module requires thermal zones which may not
+; exist on all systems; this script approach works universally.
+[module/cpu-temp]
+type = custom/script
+exec = ~/.config/polybar/scripts/cpu_temp.sh
+interval = 2
+label = CPU %output%
+format-padding = 1
+
+; GPU temperature — auto-detects NVIDIA or AMD via gpu_temp.sh.
+[module/gpu-temp]
+type = custom/script
+exec = ~/.config/polybar/scripts/gpu_temp.sh
+interval = 2
+label = GPU %output%
+format-padding = 1
+
+; Old built-in temperature module (used zone-type = x86_pkg_temp which requires
+; thermal zones — not available on all systems):
+; [module/temperature]
+; type = internal/temperature
+; interval = 0.1
+; zone-type = x86_pkg_temp
+; base-temperature = 20
+; warn-temperature = 90
+; format = <label>
+; format-warn = <label-warn>
+; label = T %temperature-c%
+; label-warn = T! %temperature-c%
+
+
+; Wireless network — auto-detects the wireless interface (no need to hardcode it).
+; ramp-signal icons reflect signal strength (requires Nerd Font).
+; packetloss animation plays when connected but packets are being dropped.
+[module/wireless-network]
+type = internal/network
+interface-type = wireless
+interval = 1
+label-font = 2:size=9
+format-connected = <ramp-signal> <label-connected>
+; Shows local IP and current download speed
+label-connected = %local_ip% %downspeed:9%
+format-disconnected =
+format-packetloss = <animation-packetloss> <label-connected>
+
+ramp-signal-0 =
+ramp-signal-1 =
+ramp-signal-2 =
+ramp-signal-3 =
+ramp-signal-4 =
+
+animation-packetloss-0 = !
+animation-packetloss-1 = ~
+animation-packetloss-framerate = 500
+
+; Wired network status via custom script — handles things like showing interface name or IP.
+; tail = true means the script stays running and pushes updates to the bar.
+[module/wired-network]
+type = custom/script
+exec = /bin/sh -c ~/.config/polybar/scripts/network_status.sh
+tail = true
+interval = 1
+format = <label>
+format-padding = 1
+; Truncate output at 16 characters
+label = %output:0:16..:%
+label-font = 2:size=6
+
+
+; VPN status module — uncomment and point to your vpn_status script to enable
+; [module/vpn]
+; type = custom/script
+; exec = /bin/sh -c ~/.config/polybar/scripts/vpn_status.py
+; tail = true
+; interval = 3
+; format = <label>
+; format-padding = 1
+; label = %output:0:15:...%
+; label-font = 2:size=8
+
+
+; Battery module with charging animation and low-battery warning.
+; ramp-capacity icons reflect charge level (requires Nerd Font).
+; format-low triggers when battery drops below low-at (20%).
+[module/battery]
+type = internal/battery
+full-at = 100
+low-at = 20
+format-charging = <animation-charging> <label-charging>
+format-discharging = <ramp-capacity> <label-discharging>
+format-full = <ramp-capacity> <label-full>
+format-low = <label-low> <animation-low>
+format-padding = 1
+
+label-charging = %percentage%%
+label-discharging = %percentage%%
+; Icons go from empty to full (index 0 = empty, 4 = full)
+ramp-capacity-0 =
+ramp-capacity-1 =
+ramp-capacity-2 =
+ramp-capacity-3 =
+ramp-capacity-4 =
+
+bar-capacity-width = 10
+bar-capacity-format = %{+u}%{+o}%fill%%empty%%{-u}%{-o}
+bar-capacity-fill = █
+bar-capacity-fill-font = 3
+bar-capacity-empty = █
+bar-capacity-empty-font = 3
+
+; Animated icon cycles while charging
+animation-charging-0 =
+animation-charging-1 =
+animation-charging-2 =
+animation-charging-3 =
+animation-charging-4 =
+animation-charging-framerate = 750
+
+; Flashing warning when battery is critically low
+animation-low-0 = !
+animation-low-1 = !!
+animation-low-2 = !!!
+animation-low-framerate = 750
+
+
+; Date and time. Click the bar to toggle between short and long format.
+; date-alt is shown on click.
+[module/date]
+type = internal/date
+date = %Y-%m-%d %H:%M:%S
+date-alt = %A, %d %B %Y  %H:%M:%S
+label-font = 2

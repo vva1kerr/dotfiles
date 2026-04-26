@@ -1,0 +1,318 @@
+# i3 config file (v4)
+# Full reference: https://i3wm.org/docs/userguide.html
+# Reload config:  mod+shift+c
+# Restart i3:     mod+shift+r
+
+# =========================================================
+# MODIFIER KEY
+# =========================================================
+# Mod1 = Alt, Mod4 = Super (Win key)
+# $mod is used for most bindings; $super is reserved for system actions
+# (lock screen) to avoid conflicts with app shortcuts that use Alt.
+set $mod Mod1
+set $super Mod4
+
+# =========================================================
+# FONTS
+# =========================================================
+# Used for window title bars. The bar {} block below sets its own font.
+font pango:monospace 8
+
+# =========================================================
+# AUTOSTART
+# =========================================================
+# exec       — runs once on login
+# exec_always — runs on every i3 reload/restart (use for bar, compositor, etc.)
+
+# Launch .desktop autostart entries (e.g. apps in /etc/xdg/autostart)
+exec --no-startup-id dex --autostart --environment i3
+
+# xss-lock listens for system suspend events and locks the screen before sleep.
+# loginctl lock-session will also trigger this lock.
+#exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id xss-lock -- ~/.config/i3/matrixlock.py
+
+# nm-applet puts a network icon in the system tray for easy wifi management
+exec --no-startup-id nm-applet
+
+# Start SSH agent, write socket info to a file so terminals can find it,
+# then load all private keys that have a matching .pub file
+exec --no-startup-id /bin/sh -c "ssh-agent > ~/.ssh/agent-env && . ~/.ssh/agent-env && for key in ~/.ssh/*.pub; do ssh-add \"${key%.pub}\" 2>/dev/null; done"
+
+# Compositor — handles transparency, shadows, vsync to reduce tearing
+#exec_always --no-startup-id picom -b
+exec_always --no-startup-id picom --config ~/.config/picom.conf -b
+
+# Set wallpaper on startup and after every reload
+exec --no-startup-id ~/.config/i3/wallpaper.sh
+
+# =========================================================
+# VOLUME KEYS
+# =========================================================
+# $refresh_i3status sends SIGUSR1 to i3status, telling it to update immediately
+# instead of waiting for the next poll interval — so the bar reflects the change at once.
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym XF86AudioMute        exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute     exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+# =========================================================
+# MOUSE BEHAVIOUR
+# =========================================================
+# Hold $mod and left-click anywhere in a floating window to drag it
+floating_modifier $mod
+
+# Allow dragging tiling windows by clicking their title bar (promotes to floating)
+tiling_drag modifier titlebar
+
+# =========================================================
+# APPLICATIONS
+# =========================================================
+bindsym $mod+Return exec alacritty
+# rofi is a fuzzy launcher — shows apps, open windows, and file browser
+#bindsym $mod+d exec --no-startup-id rofi -show drun window filebrowser
+
+# dmenu scans $PATH and lists all runnable binaries
+bindsym $mod+d exec --no-startup-id dmenu_run
+
+# =========================================================
+# WINDOW MANAGEMENT
+# =========================================================
+bindsym $mod+Shift+q kill
+
+# Focus — hjkl (vim-style) or arrow keys
+bindsym $mod+j         focus left
+bindsym $mod+k         focus down
+bindsym $mod+l         focus up
+bindsym $mod+semicolon focus right
+bindsym $mod+Left      focus left
+bindsym $mod+Down      focus down
+bindsym $mod+Up        focus up
+bindsym $mod+Right     focus right
+
+# Move focused window — same keys with Shift
+bindsym $mod+Shift+j         move left
+bindsym $mod+Shift+k         move down
+bindsym $mod+Shift+l         move up
+bindsym $mod+Shift+semicolon move right
+bindsym $mod+Shift+Left      move left
+bindsym $mod+Shift+Down      move down
+bindsym $mod+Shift+Up        move up
+bindsym $mod+Shift+Right     move right
+
+# Split direction for the next window opened in this container
+bindsym $mod+h split h
+bindsym $mod+v split v
+
+# Fullscreen for focused container
+bindsym $mod+f fullscreen toggle
+
+# Layout modes:
+#   stacking — one window visible, list of titles at top
+#   tabbed   — one window visible, tabs at top
+#   split    — tiled side by side (default)
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# Toggle focused window between tiling and floating
+bindsym $mod+Shift+space floating toggle
+
+# Move focus between the tiling layer and floating layer
+bindsym $mod+space focus mode_toggle
+
+# Focus the parent container (useful for moving whole groups of windows)
+bindsym $mod+a focus parent
+
+# =========================================================
+# WORKSPACES
+# =========================================================
+# Variables avoid repeating workspace names in both the switch and move bindings.
+# Change the names here and both sets of bindings update automatically.
+set $ws1  "1"
+set $ws2  "2"
+set $ws3  "3"
+set $ws4  "4"
+set $ws5  "5"
+set $ws6  "6"
+set $ws7  "7"
+set $ws8  "8"
+set $ws9  "9"
+set $ws10 "10"
+
+# Switch to workspace
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+# Move focused container to workspace (window follows you)
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+
+# =========================================================
+# I3 SESSION
+# =========================================================
+# reload — re-reads this config file without restarting i3
+bindsym $mod+Shift+c reload
+# restart — restarts i3 in-place, preserving your layout and open windows
+bindsym $mod+Shift+r restart
+# exit — ends the X session entirely (you'll be logged out)
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+
+# =========================================================
+# LOCK SCREEN
+# =========================================================
+# Super+L triggers matrixlock — displays cmatrix over all workspaces
+# then locks with i3lock underneath. i3lock fallback kept below.
+#bindsym $super+l exec i3lock -i ~/.lock.png
+bindsym $super+l exec ~/.config/i3/matrixlock.py
+
+# matrixlock opens alacritty fullscreen — this rule enforces it and hides the border
+for_window [class="matrixlock"] fullscreen enable, border none
+
+# =========================================================
+# RESIZE MODE
+# =========================================================
+# Enter resize mode with mod+r, then use arrow keys or hjkl to resize.
+# Press Enter or Escape to return to normal mode.
+mode "resize" {
+	bindsym j     resize shrink width  10 px or 10 ppt
+	bindsym k     resize grow   height 10 px or 10 ppt
+	bindsym l     resize shrink height 10 px or 10 ppt
+	bindsym semicolon resize grow width 10 px or 10 ppt
+
+	bindsym Left  resize shrink width  10 px or 10 ppt
+	bindsym Down  resize grow   height 10 px or 10 ppt
+	bindsym Up    resize shrink height 10 px or 10 ppt
+	bindsym Right resize grow   width  10 px or 10 ppt
+
+	bindsym Return escape mode "default"
+	bindsym Escape mode "default"
+	bindsym $mod+r mode "default"
+}
+bindsym $mod+r mode "resize"
+
+# =========================================================
+# GAPS & BORDERS
+# =========================================================
+# Pixel gaps between windows and screen edges
+gaps inner 20
+
+# client.* sets colours for window decorations.
+# Five values: border  background  text  indicator  child_border
+#   border       — thin border around the title bar
+#   background   — title bar background
+#   text         — title bar text
+#   indicator    — shows which edge the next split will open on
+#   child_border — the main visible border/ring around the window content
+client.focused          #d12f2c #263640 #93a1a1 #696ebf #ffffff
+client.focused_inactive #263640 #263640 #93a1a1 #263640 #263640
+client.unfocused        #263640 #263640 #93a1a1 #263640 #263640
+client.urgent           #263640 #b08500 #93a1a1 #263640 #263640
+
+# Give every window an 8px border so the child_border ring is clearly visible.
+# Use "border normal N" instead of "border pixel N" if you want title bars too.
+for_window [class=".*"] border pixel 8
+
+# Hide the border on a window when it's the only one on the workspace
+hide_edge_borders smart
+
+# =========================================================
+# STATUS BAR
+# =========================================================
+# ---- SELECTOR ----
+# Change $active_bar to switch bars: polybar | i3status | i3blocks
+set $active_bar polybar
+# ------------------
+
+# Kills the inactive bar and launches the selected one on every reload/restart.
+# Config files: polybar → ~/.config/polybar/config.ini
+#               i3status → /etc/i3status.conf  (or ~/.config/i3status/config)
+#               i3blocks → ~/.config/i3blocks/config
+exec_always --no-startup-id ~/.config/i3/launch_bar.sh $active_bar
+
+# i3bar block — active when $active_bar is i3status or i3blocks.
+# Change status_command below to switch between the two.
+# launch_bar.sh kills i3bar automatically when polybar is selected.
+bar {
+	status_command i3status
+
+	position top
+
+	workspace_min_width 24
+	padding 2px 8px 2px 8px
+	strip_workspace_numbers yes
+	font pango:JetBrainsMono Nerd Font 9
+	separator_symbol " | "
+
+	colors {
+		background #141c21
+		statusline #93a1a1
+		separator  #555555
+
+		focused_workspace  #141c21 #d12f2c #93a1a1
+		active_workspace   #141c21 #141c21 #93a1a1
+		inactive_workspace #141c21 #141c21 #93a1a1
+		urgent_workspace   #141c21 #b08500 #93a1a1
+	}
+}
+
+# --- OLD i3bar block (preserved for reference) ---
+# bar {
+# 	status_command i3status
+# 	position top
+# 	workspace_min_width 24
+# 	padding 2px 8px 2px 8px
+# 	strip_workspace_numbers yes
+# 	font pango:JetBrainsMono Nerd Font 9
+# 	separator_symbol " | "
+# 	colors {
+# 		background #141c21
+# 		statusline #93a1a1
+# 		separator  #555555
+# 		focused_workspace  #141c21 #d12f2c #93a1a1
+# 		active_workspace   #141c21 #141c21 #93a1a1
+# 		inactive_workspace #141c21 #141c21 #93a1a1
+# 		urgent_workspace   #141c21 #b08500 #93a1a1
+# 	}
+# }
+
+
+# Assign apps to workspaces — fires when the window appears, not when launched,
+# so there's no race condition between simultaneous exec calls.
+# Use `xprop WM_CLASS` to confirm class names if an app lands on the wrong workspace.
+assign [instance="htop-monitor"]  $ws1
+assign [instance="nvtop-monitor"] $ws1
+assign [class="Nvidia-settings"]  $ws1
+assign [class="discord"]          $ws3
+assign [class="TelegramDesktop"]  $ws3
+
+# Launch apps on startup. assign rules above place each window correctly
+# regardless of which workspace is active when the window opens.
+# alacritty --class format in 0.13+: <general>,<instance> — general is the WM_CLASS
+# class (used for most matching), instance is the second field targeted by assign.
+exec --no-startup-id alacritty --class Alacritty,htop-monitor -e htop
+exec --no-startup-id alacritty --class Alacritty,nvtop-monitor -e nvtop 
+exec --no-startup-id nvidia-settings
+
+# Firefox has no assign rule — workspace switch ensures it opens on ws2 at startup
+# but future firefox windows open on whatever workspace you're currently on.
+exec --no-startup-id i3-msg 'workspace 2; exec firefox'
+exec --no-startup-id discord
+exec --no-startup-id telegram-desktop

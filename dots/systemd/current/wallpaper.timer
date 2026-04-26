@@ -1,0 +1,10 @@
+[Unit]
+Description=Rotate wallpaper every hour seconds
+
+[Timer]
+# OnBootSec=5  — was firing immediately on login (already elapsed by login time), causing color/wallpaper mismatch
+OnUnitActiveSec=3600
+Unit=wallpaper.service
+
+[Install]
+WantedBy=timers.target

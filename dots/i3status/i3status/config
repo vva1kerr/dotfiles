@@ -1,0 +1,92 @@
+general {
+	output_format = "i3bar"
+	colors = true
+	color_good     = "#aaffaa"
+	color_degraded = "#ffaa00"
+	color_bad      = "#ff5555"
+	markup = none
+	interval = 3
+}
+
+order += "cpu_usage"
+order += "cpu_temperature 0"
+order += "memory"
+order += "load"
+order += "disk /"
+order += "wireless _first_"
+order += "volume master"
+order += "battery 0"
+order += "time"
+
+cpu_usage {
+	format = "cpu:%usage"
+	degraded_threshold = 70
+	max_threshold = 90
+	format_above_threshold = "cpu:!%usage"
+}
+
+cpu_temperature 0 {
+	format = "t:%degrees C"
+	format_above_threshold = "t:!%degrees C"
+	path = "/sys/class/thermal/thermal_zone0/temp"
+	max_threshold = 90
+}
+
+memory {
+	format = "ram:%used"
+	format_degraded = "ram:!%free"
+	threshold_degraded = "10%"
+	threshold_critical = "5%"
+	memory_used_method = memavailable
+	unit = GiB
+	decimals = 1
+}
+
+load {
+	format = "load:%1min"
+	max_threshold = 4
+	format_above_threshold = "load:!%1min"
+}
+
+disk "/" {
+	format = "disk free:%avail"
+	format_below_threshold = "disk low:%avail"
+	low_threshold = 15
+	threshold_type = percentage_avail
+	prefix_type = binary
+}
+
+# ethernet omitted — shows nothing useful when unplugged and takes space
+# re-add with: order += "ethernet _first_"
+# ethernet _first_ { format_up = "e:%ip" format_down = "" }
+
+wireless _first_ {
+	# %quality is signal strength — i3status appends % automatically
+	format_up = "wifi:%essid signal:%quality"
+	format_down = "wifi:down"
+}
+
+volume master {
+	format = "vol:%volume"
+	format_muted = "vol:muted"
+	device = "default"
+	mixer = "Master"
+	mixer_idx = 0
+}
+
+battery 0 {
+	last_full_capacity = true
+	format = "bat:%status %percentage %remaining"
+	format_down = "bat:none"
+	status_chr  = "charging"
+	status_bat  = "discharging"
+	status_unk  = "unknown"
+	status_full = "full"
+	path = "/sys/class/power_supply/BAT%d/uevent"
+	low_threshold = 15
+	integer_battery_capacity = true
+}
+
+time {
+	format = "%a %d %H:%M"
+}

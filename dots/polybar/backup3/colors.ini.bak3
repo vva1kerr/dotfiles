@@ -1,0 +1,22 @@
+[colors]
+# background = #211D1D
+# background = #44000000
+# background = #00000000
+background = #141c21
+foreground = #93a1a1
+color0 = #484343
+color1 = #69462F
+color2 = #885D3A
+color3 = #A87445
+color4 = #C78A50
+color5 = #E6A15B
+color6 = #E6A15B
+color7 = #EAC8A4
+color8 = #A48C73
+color9 = #69462F
+color10 = #885D3A
+color11 = #A87445
+color12 = #C78A50
+color13 = #E6A15B
+color14 = #E6A15B
+color15 = #EAC8A4

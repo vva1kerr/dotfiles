@@ -1,0 +1,55 @@
+/* targets both legacy and visual-refresh Discord */
+:root,
+.theme-dark,
+.theme-midnight,
+.theme-darker {{
+
+    /* === visual refresh (new Discord) === */
+    --background-base-low:       {background} !important;
+    --background-base-lower:     {color0} !important;
+    --background-base-lowest:    {color0} !important;
+    --bg-surface-overlay:        {color0} !important;
+    --chat-background-default:   {background} !important;
+    --input-background:          {color8} !important;
+    --background-secondary-alt:  {color8} !important;
+
+    /* === legacy Discord === */
+    --background-primary:        {background} !important;
+    --background-secondary:      {color0} !important;
+    --background-tertiary:       {color0} !important;
+    --background-floating:       {color0} !important;
+    --background-accent:         {color2} !important;
+    --channeltextarea-background:{color8} !important;
+    --background-message-hover:  {color0} !important;
+
+    /* === text === */
+    --text-normal:               {foreground} !important;
+    --text-default:              {foreground} !important;
+    --text-muted:                {color7} !important;
+    --header-primary:            {foreground} !important;
+    --header-secondary:          {color7} !important;
+    --text-link:                 {color4} !important;
+    --text-positive:             {color2} !important;
+    --text-warning:              {color3} !important;
+    --text-danger:               {color1} !important;
+
+    /* === interactive elements === */
+    --interactive-normal:        {color7} !important;
+    --interactive-hover:         {foreground} !important;
+    --interactive-active:        {foreground} !important;
+    --interactive-muted:         {color8} !important;
+
+    /* === scrollbars === */
+    --scrollbar-thin-thumb:      {color8} !important;
+    --scrollbar-thin-track:      transparent !important;
+    --scrollbar-auto-thumb:      {color8} !important;
+    --scrollbar-auto-track:      {color0} !important;
+}}
+
+/* direct element targeting for visual refresh layout */
+.visual-refresh nav[class*="guilds"] {{
+    background-color: {color0} !important;
+}}
+.visual-refresh div[class*="sidebar"] {{
+    background-color: {color0} !important;
+}}

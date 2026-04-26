@@ -1,0 +1,15 @@
+# Private SSH keys
+#ssh/*
+ssh/authorized_keys  
+ssh/foobar-devices                
+ssh/vva1kerr--github.pub
+ssh/config
+ssh/foobar-devices.pub  
+ssh/vva1kerr--github
+
+# Built GRUB theme output
+dotfiles/wintux-dualboot-fullscreen-grub-theme/build/
+
+need-to-test-autoinstall/
+
+dots/i3/current/current-wallpaper

@@ -1,0 +1,47 @@
+title-text: ""
+desktop-image: "background.png"
+desktop-color: "#000000"
+terminal-font: "Terminus (TTF) Regular 14"
+terminal-left: "0"
+terminal-top: "0"
+terminal-width: "100%"
+terminal-height: "100%"
+terminal-border: "0"
+
++ label {
+  text = "%ds"
+  id = "__timeout__"
+  top = 100%-10-16
+  left = 50%
+  width = 50%-10
+  align = "right"
+  color = "#ffffff"
+  font = "Cousine Regular 16"
+}
++ label {
+  text = "↑↓: select, enter: boot, 'e': options, 'c': cmd-line"
+  top = 10
+  left = 10
+  width = 100%-20
+  height = 20%
+  align = "center"
+  color = "#ffffff"
+  font = "Cousine Regular 16"
+}
+
++ boot_menu {
+  left = 0
+  top = 0
+  width = 1920
+  height = 1080
+  item_font = "Label Regular 16"
+  item_color = "#ffffff"
+  selected_item_color = "#ffffff"
+  icon_width = 1920
+  icon_height = 1080
+  item_icon_space = -1910
+  item_height = 1080
+  item_padding = 0
+  item_spacing = 0
+}
+

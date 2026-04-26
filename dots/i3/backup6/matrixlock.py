@@ -1,0 +1,135 @@
+#!/usr/bin/python3
+
+import os
+from argparse import ArgumentParser
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from os.path import dirname, join
+from subprocess import run, Popen, DEVNULL
+from threading import Thread, Event
+from time import time
+
+import json
+
+CURRENT_WALLPAPER_FILE = os.path.expanduser('~/.config/i3/current-wallpaper')
+
+def get_wallpaper():
+	with open(CURRENT_WALLPAPER_FILE) as f:
+		return f.read().strip()
+
+def main(matrix_delay_secs, terminal, locker):
+
+	workspaces = get_workspaces()
+	visible = [ws for ws in workspaces if ws['visible']]
+
+	# Lock FIRST so the keyboard is grabbed immediately —
+	# prevents i3 bindings (mod+shift+r etc.) from firing during the overlay.
+	if locker == 'xtrlock':
+		lock_proc = Popen(['xtrlock'])
+	else:
+		lock_proc = Popen(['i3lock', '-n', '-i', get_wallpaper()])
+
+	with SubprocessServer(('', 0), len(visible)) as server:
+		port = server.server_address[1]
+		for ws in visible:
+			overlay_matrix_on_workspace(ws['name'], port, matrix_delay_secs, terminal, len(visible))
+
+	lock_proc.wait()
+
+	for pid_path in server.received_posts:
+		assert pid_path.startswith('/'), pid_path
+		try:
+			pid = int(pid_path[1:])
+		except ValueError:
+			continue
+		run(['kill', str(pid)])
+
+def get_workspaces():
+	cp = run(
+		['i3-msg', '-t', 'get_workspaces'],
+		capture_output=True, check=True, text=True
+	)
+	return json.loads(cp.stdout)
+
+def overlay_matrix_on_workspace(ws_name, port, delay, terminal, visible_wss):
+	# Send child PID to server so the parent can kill it, then show Matrix:
+	pid_server_command = f'bash -c \'curl -X POST localhost:{port}/$$ && sleep {delay} && cmatrix -b\''
+
+	# terminal command
+	# for_window [class="matrixlock"] fullscreen enable must be in i3 config
+	terminal_command = f'exec "alacritty --class matrixlock -e {pid_server_command}"'
+	if terminal == 'xfce4-terminal':
+		terminal_command = f'exec "xfce4-terminal --hide-scrollbar --hide-menubar --fullscreen --color-text=black -x {pid_server_command}"'
+	elif terminal == 'urxvt':
+		terminal_command = f'exec "urxvt -bg Black -name matrixlock -e {pid_server_command}"'
+
+	# workspace command (if one ws visible we don't want to change)
+	workspace_command = ''
+	if visible_wss > 1:
+		workspace_command = f'workspace {ws_name}; '
+	run([
+		'i3-msg',
+		f'{workspace_command} '
+		# There may already be a full-screen app on that workspace.
+		# This would prevent us from showing the Matrix full-screen.
+		# So disable fullscreen first.
+		f'fullscreen disable; '
+		# --color-text=black to hide the cursor when there is a delay.
+		f'{terminal_command} '
+	], check=True, stdout=DEVNULL)
+
+class SubprocessServer(HTTPServer):
+	"""
+	Process up to num_requests POST requests in up to timeout_secs seconds and
+	store their paths in self.received_posts.
+	"""
+	def __init__(self, server_address, num_requests, timeout_secs=5):
+		super().__init__(server_address, SubprocessHandler)
+		self.received_posts = []
+		self._num_requests = num_requests
+		self._timeout_secs = timeout_secs
+		self._thread = Thread(target=self._run_in_thread)
+		self._started = Event()
+		self._timeout_encountered = False
+	def __enter__(self):
+		result = super().__enter__()
+		self._thread.start()
+		self._started.wait()
+		return result
+	def __exit__(self, *args, **kwargs):
+		self._thread.join()
+	def _run_in_thread(self):
+		self._started.set()
+		end = time() + self._timeout_secs
+		for _ in range(self._num_requests):
+			time_remaining = end - time()
+			if time_remaining < 0:
+				break
+			self.timeout = time_remaining
+			self.handle_request()
+			if self._timeout_encountered:
+				break
+	def handle_timeout(self):
+		self._timeout_encountered = True
+
+class SubprocessHandler(BaseHTTPRequestHandler):
+	def do_POST(self):
+		self.server.received_posts.append(self.path)
+		self.send_response(200)
+		self.end_headers()
+	def log_message(self, format, *args):
+		return
+
+if __name__ == '__main__':
+	parser = ArgumentParser(description='Alternative to i3lock that displays the Matrix')
+	parser.add_argument(
+		'delay', type=int, nargs='?', default=0,
+		help='Seconds between blanking out the screen and starting the Matrix'
+	)
+	parser.add_argument(
+		'--locker',help='The locker to use', default='i3lock'
+	)
+	parser.add_argument(
+		'--terminal', help='The terminal to use', default='alacritty'
+	)
+	args = parser.parse_args()
+	main(args.delay,args.terminal,args.locker)

@@ -1,0 +1,26 @@
+#!/bin/bash
+# Called by i3 on every reload/restart via exec_always.
+# Arg $1 is $active_bar from the i3 config: polybar | i3status | i3blocks
+BAR=${1:-polybar}
+
+# Auto-detect the primary connected monitor; fall back to first connected, then HDMI-0
+detect_monitor() {
+    local mon
+    mon=$(xrandr --query | awk '/ connected primary/{print $1; exit}')
+    [ -z "$mon" ] && mon=$(xrandr --query | awk '/ connected/{print $1; exit}')
+    [ -z "$mon" ] && mon="HDMI-0"
+    echo "$mon"
+}
+
+case "$BAR" in
+  polybar)
+    killall -q polybar
+    pkill -x i3bar
+    while pgrep -x polybar > /dev/null; do sleep 0.1; done
+    MONITOR=$(detect_monitor) polybar mainbar-poly &
+    ;;
+  i3status|i3blocks)
+    killall -q polybar
+    # i3bar is launched automatically by i3 from the bar {} block
+    ;;
+esac

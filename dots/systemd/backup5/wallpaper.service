@@ -1,0 +1,10 @@
+[Unit]
+Description=Change wallpaper and update colorscheme
+
+[Service]
+Type=oneshot
+KillMode=process
+ExecStart=/bin/bash %h/.config/i3/wallpaper.sh
+Environment=DISPLAY=:1
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+Environment=PATH=/home/foobar/.local/bin:/usr/local/bin:/usr/bin:/bin
