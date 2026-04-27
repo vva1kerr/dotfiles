@@ -408,6 +408,7 @@ foobar@3090:/$
 * 'curl wttr.in` # local weather
 * `grep -r "word" .` # searches that word for all files in the tree of the current dir
 * `sed -i 's/oldword/newword/g'` # s substitute, g for global aka all matching words on found line 
+* `sudo systemctl restart systemd-logind`
 
 # logs
 * [INFO] Log file: /tmp/wintux-installer-20260422-093012.log

@@ -38,6 +38,13 @@ else
     cat ../dots/systemd/current/wallpaper.timer > ~/.config/systemd/user/wallpaper.timer
 fi
 
+# logind mkdir -p /etc/systemd/logind.conf.d
+if [ ! -d /etc/systemd/logind.conf.d ]; then                                                
+    mkdir -p /etc/systemd/logind.conf.d
+else
+    cat ../dots/logind/current/nosleep.conf > /etc/systemd/logind.conf.d/nosleep.conf
+fi
+
 # rofi
 if [ ! -d ~/.config/rofi ]; then
     mkdir -p ~/.config/rofi
@@ -73,3 +80,7 @@ systemctl --user stop speech-dispatcher.service speech-dispatcher.socket 2>/dev/
 cat ../dots/picom/current/picom.conf > ~/.config/picom.conf
 
 
+# mount point for second nvme
+if [ ! -d /mnt/nvme-solt2 ]; then                                                
+    sudo mkdir -p /mnt/nvme-solt2
+fi

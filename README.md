@@ -2,7 +2,11 @@
 
 Ubuntu + i3 desktop rice. All theming is driven automatically from the wallpaper via [pywal](https://github.com/dylanaraps/pywal) — every 350 seconds a new wallpaper is picked at random and the entire color scheme regenerates across the terminal, status bar, app launcher, and Discord.
 
-![rice preview](rice-preview/first-rice-800.gif)
+![grub menu](rice-preview/grub-menu.gif)
+
+![rice preview](rice-preview/first-rice-i3wm-ubuntu-github.mp4)
+
+![lock screen](rice-preview/lockscreen.gif)
 
 ---
 
@@ -23,7 +27,7 @@ Ubuntu + i3 desktop rice. All theming is driven automatically from the wallpaper
 ---
 
 ## How the theme chain works
-
+;
 ```
 systemd wallpaper.timer (every 350s)
   └─▶ wallpaper.service

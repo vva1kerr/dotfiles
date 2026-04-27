@@ -20,7 +20,7 @@ packages=(
     feh # for setting static wallpapers, also used by pywal to set the wallpaper | rice
     mpv    # for video wallpapers | rice
     rofi   # fuzzy app launcher + window switcher, replaces dmenu | rice
-    pavucontrol # graphical audio settings manager, used in i3 for managing audio devices and volume | rice
+    pavucontrol # graphical audio settings manager, used in i3 for managing audio devices and volume | rice8
     
     # xwinwrap — NOT in apt; build from source: github.com/ujjwal96/xwinwrap
     #   deps below are needed for the build:
@@ -86,6 +86,12 @@ packages=(
     nautilus # file manager, used in i3 for opening files and folders from the terminal with `nautilus .`
 
     xsettingsd # for setting X11 settings like cursor theme, used in i3 to set the cursor theme on startup
+
+    sonic-pi
+
+    pipewire
+
+    pipewire-jack
 )
 
 sudo apt update

@@ -108,3 +108,102 @@ Copied manifest to: /home/foobar/.mozilla/native-messaging-hosts/pywalfox.json
 Set daemon executable path to: /home/foobar/.local/share/pipx/venvs/pywalfox/lib/python3.12/site-packages/pywalfox/bin/main.sh
 Set execute permissions on daemon executable
 foobar@3090:~/Pictures/wallpapers$
+
+
+
+
+
+
+
+
+
+
+
+
+
+❯ how do i disable this machine from falling asleep
+
+● On Linux, you can disable sleep with systemctl:
+
+  sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+
+  To re-enable later:
+
+  sudo systemctl unmask sleep.target suspend.target hibernate.target hybrid-sleep.target
+
+  Alternatively, if you just want to prevent sleep while on AC power via a config file,
+  edit /etc/systemd/logind.conf and set:
+
+  HandleLidSwitch=ignore
+  HandleSuspendKey=ignore
+  IdleAction=ignore
+
+  Then sudo systemctl restart systemd-logind.
+
+  The systemctl mask approach is the quickest one-liner if you want it disabled now.
+
+● For disabling sleep, you only need to care about these lines:
+
+  HandleSuspendKey=ignore
+  HandleLidSwitch=ignore
+  HandleLidSwitchExternalPower=ignore
+  IdleAction=ignore
+
+  - HandleSuspendKey — what happens when you press the sleep key
+  - HandleLidSwitch — what happens when you close the lid (on battery)
+  - HandleLidSwitchExternalPower — same, but when plugged in
+  - IdleAction — what happens after idle timeout (already ignore by default, so you can
+  skip this one)
+
+  The rest (HandlePowerKey, HandleHibernateKey, etc.) are for different hardware buttons
+  and don't affect automatic sleep.
+
+  After editing, run sudo systemctl restart systemd-logind.
+
+
+● ~/.config/systemd/user/ is for user-level systemd units (services, timers) — not for
+  logind.conf. That won't work here since logind runs as root.
+
+  The cleanest approach for dotfiles is a drop-in file instead of replacing the main
+  config:
+
+  Create /etc/systemd/logind.conf.d/nosleep.conf with only your overrides:
+
+  [Login]
+  HandleSuspendKey=ignore
+  HandleLidSwitch=ignore
+  HandleLidSwitchExternalPower=ignore
+
+  This is better than copying the full file because:
+  - The original /etc/systemd/logind.conf stays untouched (and gets package updates)
+  - Your dotfiles only track the small override file
+  - Drop-ins are the officially recommended way per the file's own comments
+
+  For your dotfiles repo, store it at something like
+  dots/logind/current/etc/systemd/logind.conf.d/nosleep.conf and symlink or copy it into
+  place with your install script (with sudo).
+
+❯ logind.conf.d does not exist whats a drop file?
+
+● A drop-in is just a config file that systemd automatically merges with the main config —
+  you don't touch the original, you just add a small file with your overrides.
+
+  Create the directory and file:
+
+  sudo mkdir -p /etc/systemd/logind.conf.d
+  sudo nano /etc/systemd/logind.conf.d/nosleep.conf
+
+  Put this in it:
+
+  [Login]
+  HandleSuspendKey=ignore
+  HandleLidSwitch=ignore
+  HandleLidSwitchExternalPower=ignore
+
+  Then restart logind:
+
+  sudo systemctl restart systemd-logind
+
+  That's it. systemd scans that .d directory automatically and merges any .conf files it
+  finds there on top of the main config. You made the directory yourself — it doesn't need
+  to pre-exist.
