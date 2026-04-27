@@ -53,6 +53,9 @@ cat ../dots/rofi/current/config.rasi > ~/.config/rofi/config.rasi
 # wal template — processed by wal on every wallpaper change to generate ~/.cache/wal/colors-rofi.rasi
 mkdir -p ~/.config/wal/templates
 cat ../dots/rofi/current/colors-rofi.rasi > ~/.config/wal/templates/colors-rofi.rasi
+# .desktop entries for ~/Applications binaries
+mkdir -p ~/.local/share/applications
+cp -f ../dots/rofi/current/desktop/*.desktop ~/.local/share/applications/ 2>/dev/null || true
 
 # discord — wal template for Vesktop Quick CSS
 mkdir -p ~/.config/wal/templates
@@ -83,4 +86,22 @@ cat ../dots/picom/current/picom.conf > ~/.config/picom.conf
 # mount point for second nvme
 if [ ! -d /mnt/nvme-solt2 ]; then                                                
     sudo mkdir -p /mnt/nvme-solt2
+fi
+
+# mount point for second nvme
+if [ ! -d ~/Applications ]; then
+    sudo mkdir -p ~/Applications
+fi
+
+# allow unprivileged user namespaces so Electron AppImages can use their sandbox
+# without this, Electron falls back to requiring --no-sandbox or crashes outright
+if [ ! -f /etc/sysctl.d/99-userns.conf ]; then
+    echo 'kernel.apparmor_restrict_unprivileged_userns = 0' | sudo tee /etc/sysctl.d/99-userns.conf
+    sudo sysctl --system
+fi
+
+
+# global claude config
+if [ ! -d ~/.claude/ClAUDE.md ]; then
+    cat ../dots/claude/current/ClAUDE.md > ~/.claude/ClAUDE.md
 fi

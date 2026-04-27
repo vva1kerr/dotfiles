@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Obsidian
+Comment=Markdown knowledge base and note-taking
+Exec=/home/foobar/Applications/Obsidian-1.12.7.AppImage
+Icon=obsidian
+Categories=Office;TextEditor;

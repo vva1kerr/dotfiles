@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=OpenShot 3.5
+Comment=Free and open-source video editor
+Exec=/home/foobar/Applications/OpenShot-v3.5.1-x86_64.AppImage
+Icon=openshot
+Categories=AudioVideo;Video;

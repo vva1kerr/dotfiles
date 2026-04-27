@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=balenaEtcher
+Comment=Flash OS images to SD cards and USB drives
+Exec=/home/foobar/Applications/balenaEtcher-1.7.9-ia32.AppImage --no-sandbox
+Icon=drive-removable-media
+Categories=Utility;

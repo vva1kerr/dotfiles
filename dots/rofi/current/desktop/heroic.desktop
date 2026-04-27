@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Heroic Games Launcher
+Comment=Epic Games and GOG launcher for Linux
+Exec=/home/foobar/Applications/Heroic-2.20.1-linux-x86_64.AppImage --no-sandbox
+Icon=heroic
+Categories=Game;

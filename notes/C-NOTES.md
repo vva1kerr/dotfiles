@@ -207,3 +207,68 @@ foobar@3090:~/Pictures/wallpapers$
   That's it. systemd scans that .d directory automatically and merges any .conf files it
   finds there on top of the main config. You made the directory yourself — it doesn't need
   to pre-exist.
+
+
+
+
+
+
+
+
+❯ how can i add my ~/Applications/ to the rofi search?                                                                                                                                               
+
+● Let me check the current rofi config.
+
+  Read 1 file (ctrl+o to expand)
+
+● Rofi's drun mode searches XDG data dirs for .desktop files. The cleanest way to add ~/Applications/ is to set the drun-directories option in the config:
+
+● Update(dots/rofi/current/config.rasi)
+  ⎿  Added 1 line
+      2      modi:                "drun,window,run";
+      3      show-icons:          true;
+      4      drun-display-format: "{name}";                                                                                                                                                          
+      5 +    drun-directories:    "/usr/share/applications,/usr/local/share/applications,~/.local/share/applications,~/Applications";                                                         
+      6      font:                "DejaVu Sans Mono 11";                                                                                                                                             
+      7  }                                                                                                                                                                                         
+      8  
+
+● drun-directories overrides rofi's default search list entirely, so the standard paths are included explicitly alongside ~/Applications.
+
+  For this to work, the apps in ~/Applications/ need .desktop files. If they're AppImages or raw binaries without .desktop files, drun won't find them — you'd need to create a .desktop file for    
+  each one and place it in ~/Applications/ (or ~/.local/share/applications/).
+                                                                                                                                                                                                     
+  Deploy the updated config with:                                                                                                                                                                  
+  cd scripts && bash update-dots.sh
+
+  ? for shortcuts
+● .desktop file — a plain text file that tells the desktop environment (and rofi) how to launch an app. Example:
+
+  [Desktop Entry]
+  Type=Application
+  Name=MyApp
+  Exec=/home/foobar/Applications/myapp.AppImage
+  Icon=myapp
+  Categories=Utility;
+
+  Rofi's drun mode reads these to build its app list — it doesn't scan for raw executables, only .desktop files.
+
+  ---
+  ~/Applications/ vs ~/.local/share/applications/
+
+  ┌─────────────────────────────┬──────────────────────────────────────────────────────────────┬──────────────────────────────────────────────┐
+  │                             │                       ~/Applications/                        │         ~/.local/share/applications/         │
+  ├─────────────────────────────┼──────────────────────────────────────────────────────────────┼──────────────────────────────────────────────┤
+  │ Standard?                   │ No — unofficial convention (used by some AppImage launchers) │ Yes — XDG standard, recognized by everything │
+  ├─────────────────────────────┼──────────────────────────────────────────────────────────────┼──────────────────────────────────────────────┤
+  │ Rofi default search?        │ No                                                           │ Yes                                          │
+  ├─────────────────────────────┼──────────────────────────────────────────────────────────────┼──────────────────────────────────────────────┤
+  │ .desktop files or binaries? │ Both, depending on the tool                                  │ .desktop files only                          │
+  ├─────────────────────────────┼──────────────────────────────────────────────────────────────┼──────────────────────────────────────────────┤
+  │ What reads it?              │ Only tools you explicitly configure                          │ Rofi, GNOME, KDE, xdg-open, etc.             │
+  └─────────────────────────────┴──────────────────────────────────────────────────────────────┴──────────────────────────────────────────────┘
+
+  Practical recommendation: put the .desktop files in ~/.local/share/applications/ and keep the actual AppImage binaries wherever you want (e.g. ~/Applications/). The .desktop file just points to
+  the binary via Exec=.
+
+  That way rofi finds them with zero extra config (you can revert my change), and everything else on the system does too.

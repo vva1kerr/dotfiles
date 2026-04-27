@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Upscayl
+Comment=AI image upscaler
+Exec=/home/foobar/Applications/upscayl-2.15.0-linux.AppImage
+Icon=image-x-generic
+Categories=Graphics;
