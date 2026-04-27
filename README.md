@@ -4,7 +4,7 @@ Ubuntu + i3 desktop rice. All theming is driven automatically from the wallpaper
 
 ![grub menu](rice-preview/grub-menu.gif)
 
-![rice preview](rice-preview/first-rice-i3wm-ubuntu-github.mp4)
+![rice preview](rice-preview/first-rice-i3wm-ubuntu-gh.gif)
 
 ![lock screen](rice-preview/lockscreen.gif)
 
