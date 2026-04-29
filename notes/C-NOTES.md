@@ -272,3 +272,82 @@ foobar@3090:~/Pictures/wallpapers$
   the binary via Exec=.
 
   That way rofi finds them with zero extra config (you can revert my change), and everything else on the system does too.
+
+
+
+
+
+
+foobar@3090:~$ claude
+ ▐▛███▜▌   Claude Code v2.1.122
+▝▜█████▛▘  Sonnet 4.6 · Claude Pro
+  ▘▘ ▝▝    /home/foobar
+
+❯ so i have a folder is one spot and a newer version in another, if i mv or cp the newer
+  folder to the other location will is update the older folder with the new files and the
+  other files will it update those as well?
+
+● It depends on the command and flags:
+
+  mv folder/ destination/
+  - If destination/ already exists, it moves the source inside it (e.g.,
+  destination/folder/), not a merge. Existing files in destination/ are untouched.
+
+  cp -r folder/ destination/
+  - Same behavior — copies the source inside the destination if it already exists. No
+  merging by default.
+
+  To actually merge/update (newer overwrites older):
+  cp -r newfolder/. oldfolder/
+  The trailing /. copies the contents into the target. New files are added, existing files
+  are overwritten, but files only in oldfolder/ that aren't in newfolder/ are left alone.
+
+  To sync (add new, update changed, remove files not in source):
+  rsync -av --delete newfolder/ oldfolder/
+  --delete removes files from oldfolder/ that no longer exist in newfolder/. Drop --delete
+  if you want to keep old files.
+
+  Quick summary:
+
+  ┌──────────────────────────┬──────────────┬────────────────────┬────────────────────┐
+  │         Command          │  Adds new    │  Updates changed   │  Removes deleted   │
+  │                          │    files     │       files        │       files        │
+  ├──────────────────────────┼──────────────┼────────────────────┼────────────────────┤
+  │ cp -r src/. dst/         │ Yes          │ Yes                │ No                 │
+  ├──────────────────────────┼──────────────┼────────────────────┼────────────────────┤
+  │ rsync -av src/ dst/      │ Yes          │ Yes                │ No                 │
+  ├──────────────────────────┼──────────────┼────────────────────┼────────────────────┤
+  │ rsync -av --delete src/  │ Yes          │ Yes                │ Yes                │
+  │ dst/                     │              │                    │                    │
+
+
+
+
+❯ what did you do? should be add systemctl --user restart wireplumber pipewire pipewire-pulse to the i3 config to run at start?
+
+● What I did: PipeWire (the Linux audio server) failed to open your sound card at login because something else briefly held the ALSA device busy — a race condition. This left PipeWire with
+   no output sink (no playback device) at all. Restarting the three services forced PipeWire to re-probe the hardware and successfully claim the device.
+
+  On adding it to i3 config: I'd advise against it as written. exec in i3 runs on login, but exec_always runs on every i3 restart too ($mod+shift+r) — you'd be killing audio mid-session
+  unnecessarily. Even exec is a bit heavy-handed.
+
+  A cleaner option is a one-shot systemd user service with a short delay, which targets the actual problem (race condition at login) without side effects:
+
+  # ~/.config/systemd/user/fix-audio.service
+  [Unit]
+  Description=Re-init PipeWire after login race condition
+  After=pipewire.service wireplumber.service
+
+  [Service]
+  Type=oneshot
+  ExecStartPre=/bin/sleep 3
+  ExecStart=systemctl --user restart wireplumber pipewire pipewire-pulse
+  RemainAfterExit=yes
+
+  [Install]
+  WantedBy=default.target
+
+  Then systemctl --user enable fix-audio.service.
+
+  That said — do you want to first check whether it happens consistently on every boot? If it's rare, a workaround in i3 config (with exec, not exec_always) might be fine for now. Also,
+  per your dotfiles setup, I'd edit the right place — want me to find your i3 config in ~/dotfiles?

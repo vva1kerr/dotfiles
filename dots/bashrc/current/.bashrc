@@ -266,12 +266,20 @@ echo ""
 echo "hostnamectl"
 hostnamectl
 
+# echo ""
+# echo "neofetch"
+# if command -v neofetch &>/dev/null; then
+#     neofetch
+# else
+#     echo "(neofetch not installed)"
+# fi
+
 echo ""
-echo "neofetch"
-if command -v neofetch &>/dev/null; then
-    neofetch
+echo "fastfetch"
+if command -v fastfetch &>/dev/null; then
+    fastfetch
 else
-    echo "(neofetch not installed)"
+    echo "(fastfetch not installed)"
 fi
 
 
@@ -290,4 +298,16 @@ gpu-fan() {
         return 1
     fi
     nvidia-settings -c :1 -a '[gpu:0]/GPUFanControlState=1' -a "[fan:0]/GPUTargetFanSpeed=$1" -a "[fan:1]/GPUTargetFanSpeed=$1"
+}
+
+
+word-count() {
+    if [ -z "$1" ]; then # -z tests if a string is empty (zero length).
+        echo "Usage: word-count <file>"
+        return 1
+    elif [ ! -f "$1" ]; then # -f tests if a file exists and is a regular file 
+        echo "Error: File '$1' not found"
+        return 1
+    fi
+    cat "$1" | tr ' ' '\n' | sort | uniq -c | sort -rn
 }

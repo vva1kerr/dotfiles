@@ -2,6 +2,6 @@
 Type=Application
 Name=LM Studio
 Comment=Run local LLMs on your machine
-Exec=/home/foobar/Applications/LM-Studio-0.4.11-1-x64.AppImage
+Exec=/home/foobar/Applications/APPIMAGE/LM-Studio-0.4.11-1-x64.AppImage
 Icon=applications-science
 Categories=Science;Utility;

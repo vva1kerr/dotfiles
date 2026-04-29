@@ -85,7 +85,7 @@ cat ../dots/picom/current/picom.conf > ~/.config/picom.conf
 
 # mount point for second nvme
 if [ ! -d /mnt/nvme-solt2 ]; then                                                
-    sudo mkdir -p /mnt/nvme-solt2
+    sudo mkdir -p /mnt/nvme-slot2
 fi
 
 # mount point for second nvme
@@ -102,6 +102,7 @@ fi
 
 
 # global claude config
-if [ ! -d ~/.claude/ClAUDE.md ]; then
+if [ ! -d ~/.claude/ ]; then
+    mkdir -p ~/.claude/
     cat ../dots/claude/current/ClAUDE.md > ~/.claude/ClAUDE.md
 fi

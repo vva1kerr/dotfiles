@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=OOCT
+Comment=stability testing software
+Exec=/home/foobar/Applications/ELF/OCCT
+Icon=OCCT
+Categories=Software;Testing;

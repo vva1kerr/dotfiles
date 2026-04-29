@@ -317,17 +317,17 @@ bar {
 # Assign apps to workspaces — fires when the window appears, not when launched,
 # so there's no race condition between simultaneous exec calls.
 # Use `xprop WM_CLASS` to confirm class names if an app lands on the wrong workspace.
-assign [instance="htop-monitor"]  $ws1
-assign [instance="nvtop-monitor"] $ws1
-assign [instance="ws1-terminal"]  $ws1
-#assign [class="Nvidia-settings"]  $ws1
-#assign [class="discord"]          $ws3
-#assign [class="TelegramDesktop"]  $ws3
+assign [instance="htop-monitor"]     $ws1
+assign [instance="nvtop-monitor"]    $ws1
+assign [instance="ws1-terminal"]     $ws1
+#assign [class="Nvidia-settings"]    $ws1
+#assign [class="discord"]            $ws3
+#assign [class="TelegramDesktop"]    $ws3
 assign [instance="vesktop"]          $ws3
-assign [instance="code"] $ws4
-assign [instance="ws10-terminal"] $ws10
 # assign rule instead of i3-msg workspace switch — keeps ws1 as the active workspace at login
-assign [class="firefox"]           $ws2
+assign [class="firefox"]             $ws2
+assign [instance="code"]             $ws10
+assign [instance="ws10-terminal"]    $ws10
 
 # --- Workspace 1 layout + apps ---
 # append_layout loads the saved split/position layout into ws1 first,

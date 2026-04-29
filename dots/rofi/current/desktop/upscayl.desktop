@@ -2,6 +2,6 @@
 Type=Application
 Name=Upscayl
 Comment=AI image upscaler
-Exec=/home/foobar/Applications/upscayl-2.15.0-linux.AppImage
+Exec=/home/foobar/Applications/APPIMAGE/upscayl-2.15.0-linux.AppImage
 Icon=image-x-generic
 Categories=Graphics;

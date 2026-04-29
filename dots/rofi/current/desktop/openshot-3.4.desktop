@@ -2,6 +2,6 @@
 Type=Application
 Name=OpenShot 3.4
 Comment=Free and open-source video editor
-Exec=/home/foobar/Applications/OpenShot-v3.4.0-x86_64.AppImage
+Exec=/home/foobar/Applications/APPIMAGE/OpenShot-v3.4.0-x86_64.AppImage
 Icon=openshot
 Categories=AudioVideo;Video;
