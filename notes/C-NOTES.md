@@ -351,3 +351,22 @@ foobar@3090:~$ claude
 
   That said — do you want to first check whether it happens consistently on every boot? If it's rare, a workaround in i3 config (with exec, not exec_always) might be fine for now. Also,
   per your dotfiles setup, I'd edit the right place — want me to find your i3 config in ~/dotfiles?
+
+
+
+
+      2  sudo apt install ubuntu-drivers-common
+    3  sudo ubuntudrivers install
+    4  sudo ubuntu-drivers install
+
+
+
+
+
+● Missing deps. Fix with:                   
+                                                                            
+  sudo apt-get install -f
+
+
+# verify sounds
+arecord -l

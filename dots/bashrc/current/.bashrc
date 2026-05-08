@@ -266,21 +266,21 @@ echo ""
 echo "hostnamectl"
 hostnamectl
 
-# echo ""
-# echo "neofetch"
-# if command -v neofetch &>/dev/null; then
-#     neofetch
-# else
-#     echo "(neofetch not installed)"
-# fi
-
 echo ""
-echo "fastfetch"
-if command -v fastfetch &>/dev/null; then
-    fastfetch
+echo "neofetch"
+if command -v neofetch &>/dev/null; then
+    neofetch
 else
-    echo "(fastfetch not installed)"
+    echo "(neofetch not installed)"
 fi
+
+#echo ""
+#echo "fastfetch"
+#if command -v fastfetch &>/dev/null; then
+#    fastfetch
+#else
+#    echo "(fastfetch not installed)"
+#fi
 
 
 alias obsidian="~/APPIMAGES/Obsidian-1.12.7.AppImage --no-sandbox"
@@ -311,3 +311,108 @@ word-count() {
     fi
     cat "$1" | tr ' ' '\n' | sort | uniq -c | sort -rn
 }
+
+
+
+
+
+
+
+file-folder-sort() {
+    local target_dir="${1:-.}"
+    local flatten=false
+
+    # Parse flags
+    for arg in "$@"; do
+        case "$arg" in
+            --flatten|-f) flatten=true ;;
+            -*) echo "Unknown flag: $arg" >&2; return 1 ;;
+            *) target_dir="$arg" ;;
+        esac
+    done
+
+    target_dir="$(realpath "$target_dir")"
+
+    if [[ ! -d "$target_dir" ]]; then
+        echo "Error: '$target_dir' is not a directory." >&2
+        return 1
+    fi
+
+    if $flatten; then
+        echo "Flattening sorted folders in: $target_dir"
+
+        local moved=0
+        local skipped=0
+
+        # Look one level deep inside subdirectories
+        while IFS= read -r -d '' file; do
+            local filename
+            filename="$(basename "$file")"
+            local dest="$target_dir/$filename"
+
+            # If a file with that name already exists at the top level, skip
+            if [[ -e "$dest" ]]; then
+                echo "  [SKIP] $filename (already exists in target)"
+                ((skipped++))
+                continue
+            fi
+
+            mv -- "$file" "$target_dir/"
+            echo "  [←] $filename"
+            ((moved++))
+
+        done < <(find "$target_dir" -mindepth 2 -maxdepth 2 -type f -print0)
+
+        # Remove empty subdirectories left behind
+        find "$target_dir" -mindepth 1 -maxdepth 1 -type d -empty -exec rmdir {} +
+
+        echo ""
+        echo "Done: $moved file(s) moved out, $skipped skipped."
+
+    else
+        echo "Sorting files in: $target_dir"
+
+        local moved=0
+        local skipped=0
+
+        while IFS= read -r -d '' file; do
+            local filename
+            filename="$(basename "$file")"
+
+            [[ "$filename" == .* ]] && continue
+
+            local ext="${filename##*.}"
+            if [[ "$ext" == "$filename" || -z "$ext" ]]; then
+                ext="MISC"
+            else
+                ext="${ext^^}"
+            fi
+
+            local dest_dir="$target_dir/$ext"
+            mkdir -p "$dest_dir"
+
+            if [[ "$(dirname "$file")" == "$dest_dir" ]]; then
+                ((skipped++))
+                continue
+            fi
+
+            mv -- "$file" "$dest_dir/"
+            echo "  [$ext] $filename"
+            ((moved++))
+
+        done < <(find "$target_dir" -maxdepth 1 -type f -print0)
+
+        echo ""
+        echo "Done: $moved file(s) moved, $skipped already in place."
+    fi
+}
+## Sort current directory
+#file-folder-sort
+## Sort a specific path
+#file-folder-sort ~/Downloads
+## Flatten current directory (undo the sort)
+#file-folder-sort --flatten
+#file-folder-sort -f
+## Flatten a specific path
+#file-folder-sort --flatten ~/Downloads
+#file-folder-sort -f ~/Downloads

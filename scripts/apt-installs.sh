@@ -13,7 +13,7 @@ packages=(
     tmux      
 
     # rice
-    i3
+    #i3
     alacritty # terminal emulator | rice
     picom     # compositor for i3, also used by pywal to set the wallpaper | rice
     polybar   # status bar | rice
@@ -92,6 +92,20 @@ packages=(
     pipewire
 
     pipewire-jack
+
+    whatweb
+
+    sl
+
+    gnome-boxes
+    qemu-system-x86
+    virt-manger
+    libvirt-clients
+    libvirt-daemon-system
+    spice-vdagent
+    bridge-utils
+    
+    gnome-connections
 )
 
 sudo apt update
