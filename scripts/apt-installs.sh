@@ -106,6 +106,11 @@ packages=(
     bridge-utils
     
     gnome-connections
+
+    openssh-server
+
+    #synaptic        # classic deb package manager
+    #gnome-software  # with apt plugin, not snap-first
 )
 
 sudo apt update

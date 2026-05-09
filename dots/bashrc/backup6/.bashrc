@@ -253,8 +253,7 @@ if command -v nvidia-smi &>/dev/null; then
     # set gpu fan spin (needs to be set on startup not terminal)
     # only runs when an X display is active, otherwise nvidia-settings errors
     if [ -n "$DISPLAY" ] && command -v nvidia-settings &>/dev/null; then
-            #sudo nvidia-settings -c :1 -a '[gpu:0]/GPUFanControlState=1' -a '[fan:0]/GPUTargetFanSpeed=50' -a '[fan:1]/GPUTargetFanSpeed=50'
-            nvidia-settings -c :1 -a '[gpu:0]/GPUFanControlState=1' -a '[fan:0]/GPUTargetFanSpeed=50' -a '[fan:1]/GPUTargetFanSpeed=50'
+        nvidia-settings -c :1 -a '[gpu:0]/GPUFanControlState=1' -a '[fan:0]/GPUTargetFanSpeed=50' -a '[fan:1]/GPUTargetFanSpeed=50'
     fi
 else
     echo "(nvidia-smi not found — NVIDIA drivers not installed or no NVIDIA GPU)"
@@ -298,13 +297,7 @@ gpu-fan() {
         echo "Usage: gpu-fan <0-100>"
         return 1
     fi
-    #sudo nvidia-settings -c :1 -a '[gpu:0]/GPUFanControlState=1' -a "[fan:0]/GPUTargetFanSpeed=$1" -a "[fan:1]/GPUTargetFanSpeed=$1"
     nvidia-settings -c :1 -a '[gpu:0]/GPUFanControlState=1' -a "[fan:0]/GPUTargetFanSpeed=$1" -a "[fan:1]/GPUTargetFanSpeed=$1"
-}
-
-
-gpu-fan-auto() {
-    sudo nvidia-settings -c :1 -a '[gpu:0]/GPUFanControlState=0'
 }
 
 
