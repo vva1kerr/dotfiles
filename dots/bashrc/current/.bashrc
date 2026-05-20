@@ -268,6 +268,11 @@ echo "hostnamectl"
 hostnamectl
 
 echo ""
+echo "curl wttr.in"
+curl wttr.in
+
+
+echo ""
 echo "neofetch"
 if command -v neofetch &>/dev/null; then
     neofetch
